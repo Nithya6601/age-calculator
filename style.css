@@ -55,12 +55,21 @@ body.dark .container {
   gap: 15px;
 }
 
-.input-box input {
+.input-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.input-box input[type="text"] {
+  flex: 1;
   padding: 14px 20px;
   border: 0;
   outline: 0;
   font-size: 18px;
   border-radius: 5px;
+  width: 100%;
+  content: "🌙";
 }
 
 .input-box button {
@@ -77,6 +86,14 @@ body.dark .container {
 
 .input-box button:hover {
   background: #f7f77f;
+}
+
+#calendar-button {
+  font-size: 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
 }
 
 #result {
@@ -99,18 +116,55 @@ body.dark .container {
   right: 20px;
 }
 
-#theme-toggle {
-  background: transparent;
-  border: none;
-  border-radius: 50%;
-  padding: 10px;
-  font-size: 20px;
-  cursor: pointer;
-  transition: transform 0.5s ease;
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
 }
 
-#theme-toggle.rotate {
-  transform: rotate(180deg);
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "☀️";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  border-radius: 50%;
+  transition: 0.4s;
+}
+
+input:checked + .slider {
+  background-color: #666;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+  content: "🌙";
 }
 
 .error-message {
@@ -127,5 +181,14 @@ body.dark .container {
 
   .input-box {
     padding: 15px;
+  }
+
+  .input-with-icon {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #calendar-button {
+    align-self: flex-end;
   }
 }

@@ -2,25 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Age Calculator</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="theme-toggle">
-    <button id="theme-toggle" title="Toggle Theme">🌙</button>
+    <label class="switch">
+      <input type="checkbox" id="theme-toggle" />
+      <span class="slider"></span>
+    </label>
   </div>
+
   <div class="container">
     <div class="calculator">
       <h1><span>Age Calculator</span></h1>
       <div class="input-box">
-        <input
-          type="date"
-          id="dob"
-          inputmode="numeric"
-          pattern="\d{4}-\d{2}-\d{2}"
-          placeholder="yyyy-mm-dd"
-        />
+        <div class="input-with-icon">
+          <input 
+            type="text"
+            id="dob"
+            placeholder="dd-mm-yyyy"
+            inputmode="numeric"
+            pattern="\d{2}-\d{2}-\d{4}"
+          />
+          <!-- <button id="calendar-button" title="Open Calendar">&#128197;</button> -->
         <span class="error-message" id="error-message"></span>
         <button onclick="calculateAge()">Calculate</button>
         <button onclick="reset()">Reset</button>
@@ -38,18 +44,18 @@
     const body = document.body;
     const errorMessage = document.getElementById("error-message");
 
-    userInput.max = new Date().toISOString().split("T")[0];
-
     function calculateAge() {
-      if (!userInput.value) {
-        errorMessage.textContent = "Please enter a valid date.";
+      const datePattern = /^\d{2}-\d{2}-\d{4}$/;
+      if (!userInput.value || !datePattern.test(userInput.value)) {
+        errorMessage.textContent = "Please enter a valid date in dd-mm-yyyy format.";
         return;
       }
 
       errorMessage.textContent = "";
-
-      const birthDate = new Date(userInput.value);
+      const [day, month, year] = userInput.value.split("-");
+      const birthDate = new Date(`${year}-${month}-${day}`);
       const today = new Date();
+
       let d1 = birthDate.getDate();
       let m1 = birthDate.getMonth() + 1;
       let y1 = birthDate.getFullYear();
@@ -97,10 +103,8 @@
       errorMessage.textContent = "";
     }
 
-    themeToggle.addEventListener("click", () => {
+    themeToggle.addEventListener("change", () => {
       body.classList.toggle("dark");
-      themeToggle.classList.toggle("rotate");
-      themeToggle.textContent = body.classList.contains("dark") ? "☀️" : "🌙";
     });
 
     userInput.addEventListener("keydown", (event) => {
@@ -108,6 +112,21 @@
         calculateAge();
       }
     });
+
+
+    // Auto format dd-mm-yyyy
+    userInput.addEventListener("input", (event) => {
+      let value = event.target.value.replace(/\D/g, "");
+      if (value.length > 2 && value.length <= 4) {
+        value = value.slice(0, 2) + "-" + value.slice(2);
+      } else if (value.length > 4) {
+        value = value.slice(0, 2) + "-" + value.slice(2, 4) + "-" + value.slice(4, 8);
+      }
+      event.target.value = value;
+    });
+  </script>
+</body>
+</html>
   </script>
 </body>
 </html>
