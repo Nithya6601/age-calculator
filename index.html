@@ -2,29 +2,28 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Age Calculator</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body class="light-mode">
-  <!-- Dark Mode Toggle -->
-  <div class="mode-toggle">
-    <label class="switch">
-      <input type="checkbox" id="themeToggle" />
-      <span class="slider round"></span>
-    </label>
-    <span>Dark Mode</span>
+<body>
+  <div class="theme-toggle">
+    <button id="theme-toggle" title="Toggle Theme">🌙</button>
   </div>
-
   <div class="container">
-    <div class="calculator fade-in">
-      <h1>Age <span>Calculator</span></h1>
+    <div class="calculator">
+      <h1><span>Age Calculator</span></h1>
       <div class="input-box">
-        <input type="date" id="date" inputmode="numeric"
-        pattern="\d{4}-\d{2}-\d{2}"
-        placeholder="yyyy-mm-dd" />
+        <input
+          type="date"
+          id="dob"
+          inputmode="numeric"
+          pattern="\d{4}-\d{2}-\d{2}"
+          placeholder="yyyy-mm-dd"
+        />
+        <span class="error-message" id="error-message"></span>
         <button onclick="calculateAge()">Calculate</button>
-        <button class="reset" onclick="resetForm()">Reset</button>
+        <button onclick="reset()">Reset</button>
       </div>
       <p id="result"></p>
       <p id="extraResult"></p>
@@ -32,21 +31,28 @@
   </div>
 
   <script>
-    const userInput = document.getElementById("date");
+    const userInput = document.getElementById("dob");
     const result = document.getElementById("result");
     const extraResult = document.getElementById("extraResult");
-    const toggle = document.getElementById("themeToggle");
+    const themeToggle = document.getElementById("theme-toggle");
+    const body = document.body;
+    const errorMessage = document.getElementById("error-message");
 
     userInput.max = new Date().toISOString().split("T")[0];
 
     function calculateAge() {
+      if (!userInput.value) {
+        errorMessage.textContent = "Please enter a valid date.";
+        return;
+      }
+
+      errorMessage.textContent = "";
+
       const birthDate = new Date(userInput.value);
       const today = new Date();
-
       let d1 = birthDate.getDate();
       let m1 = birthDate.getMonth() + 1;
       let y1 = birthDate.getFullYear();
-
       let d2 = today.getDate();
       let m2 = today.getMonth() + 1;
       let y2 = today.getFullYear();
@@ -65,7 +71,7 @@
         d3 = d2 - d1;
       } else {
         m3--;
-        d3 = new Date(y2, m2 - 1, 0).getDate() + d2 - d1;
+        d3 = getDaysInMonth(y2, m2 - 1) + d2 - d1;
       }
 
       if (m3 < 0) {
@@ -73,24 +79,34 @@
         y3--;
       }
 
-      const diffTime = today - birthDate;
-      const totalDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-      const totalHours = Math.floor(diffTime / (1000 * 60 * 60));
+      const totalDays = Math.floor((today - birthDate) / (1000 * 60 * 60 * 24));
+      const totalHours = totalDays * 24;
 
-      result.innerHTML = `You are <span>${y3}</span> years, <span>${m3}</span> months, and <span>${d3}</span> days old.`;
-      extraResult.innerHTML = `That's a total of <span>${totalDays}</span> days or <span>${totalHours}</span> hours.`;
+      result.innerHTML = `You are <span>${y3}</span> years, <span>${m3}</span> months and <span>${d3}</span> days old.`;
+      extraResult.innerHTML = `Total Days: <span>${totalDays}</span>, Total Hours: <span>${totalHours}</span>`;
     }
 
-    function resetForm() {
+    function getDaysInMonth(year, month) {
+      return new Date(year, month + 1, 0).getDate();
+    }
+
+    function reset() {
       userInput.value = "";
       result.innerHTML = "";
       extraResult.innerHTML = "";
+      errorMessage.textContent = "";
     }
 
-    // Theme Toggle
-    toggle.addEventListener("change", () => {
-      document.body.classList.toggle("dark-mode");
-      document.body.classList.toggle("light-mode");
+    themeToggle.addEventListener("click", () => {
+      body.classList.toggle("dark");
+      themeToggle.classList.toggle("rotate");
+      themeToggle.textContent = body.classList.contains("dark") ? "☀️" : "🌙";
+    });
+
+    userInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        calculateAge();
+      }
     });
   </script>
 </body>
